@@ -1,11 +1,7 @@
 package org.dive2025.qdeep.domain.user.service;
 
-import org.dive2025.qdeep.common.exception.CustomException;
-import org.dive2025.qdeep.common.exception.ErrorCode;
 import org.dive2025.qdeep.domain.user.Vo.Nickname;
-import org.dive2025.qdeep.domain.user.dto.request.NicknameDuplicationRequest;
 import org.dive2025.qdeep.domain.user.dto.request.UserCreateRequest;
-import org.dive2025.qdeep.domain.user.dto.request.UsernameDuplicationRequest;
 import org.dive2025.qdeep.domain.user.dto.response.UserCreateResponse;
 import org.dive2025.qdeep.domain.user.entity.Role;
 import org.dive2025.qdeep.domain.user.repository.UserRepository;
