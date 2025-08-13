@@ -6,6 +6,7 @@ import org.dive2025.qdeep.common.exception.ErrorCode;
 import org.dive2025.qdeep.common.security.filter.JwtFilter;
 import org.dive2025.qdeep.common.security.filter.LoginFilter;
 import org.dive2025.qdeep.common.security.service.AuthService;
+import org.dive2025.qdeep.common.security.service.ReissueService;
 import org.dive2025.qdeep.common.security.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +29,7 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
     private final JwtUtil jwtUtil;
     private final AntPathMatcher antPathMatcher;
+    private final ReissueService reissueService;
 
     @Autowired
     private AuthService authService;
@@ -43,7 +45,8 @@ public class SecurityConfig {
             throws Exception{
         return new LoginFilter(objectMapper,
                 authenticationManager(authenticationConfiguration),
-                jwtUtil);
+                jwtUtil,
+                reissueService);
     }
 
 
