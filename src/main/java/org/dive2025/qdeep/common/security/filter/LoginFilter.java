@@ -7,9 +7,11 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.dive2025.qdeep.common.exception.ErrorCode;
 import org.dive2025.qdeep.common.security.dto.request.LoginRequest;
 import org.dive2025.qdeep.common.security.dto.response.LoginFailedResponse;
+import org.dive2025.qdeep.common.security.service.ReissueService;
 import org.dive2025.qdeep.common.security.util.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,23 +24,28 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Iterator;
 
+@Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final ObjectMapper objectMapper;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final ReissueService reissueService;
 
 
     public LoginFilter(ObjectMapper objectMapper,
                        AuthenticationManager authenticationManager,
-                       JwtUtil jwtUtil){
+                       JwtUtil jwtUtil,
+                       ReissueService reissueService){
 
         this.objectMapper = objectMapper;
         this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
+        this.reissueService = reissueService;
         setAuthenticationManager(authenticationManager); // 부모클래스의 메소드를 통해 필드 초기화
     }
 
@@ -86,9 +93,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String access = jwtUtil.createJwt("access",username,role,600000L);
         String refresh = jwtUtil.createJwt("refresh",username,role,8640000L);
 
+
+
         response.setHeader("Authorization",access);
-        //response.addCookie();
+        response.addCookie(reissueService.createCookie("refresh",refresh));
         response.setStatus(HttpStatus.OK.value());
+        log.info("[ 로그인 성공 ] TIME : {} , USER : {}", LocalDateTime.now(),username);
 
     }
 
