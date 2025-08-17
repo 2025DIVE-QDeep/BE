@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.dive2025.qdeep.common.exception.ErrorCode;
 import org.dive2025.qdeep.common.security.filter.JwtFilter;
+import org.dive2025.qdeep.common.security.filter.JwtLogoutFilter;
 import org.dive2025.qdeep.common.security.filter.LoginFilter;
 import org.dive2025.qdeep.common.security.service.AuthService;
 import org.dive2025.qdeep.common.security.service.ReissueService;
@@ -15,9 +16,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.util.AntPathMatcher;
 
 @EnableWebSecurity
@@ -65,6 +68,11 @@ public class SecurityConfig {
     }
 
     @Bean
+    public JwtLogoutFilter jwtLogoutFilter() throws Exception{
+        return new JwtLogoutFilter(jwtUtil,reissueService);
+    }
+
+    @Bean
     public AuthenticationManager authenticationManager
             (AuthenticationConfiguration authenticationConfiguration)
             throws Exception{
@@ -89,7 +97,25 @@ public class SecurityConfig {
                 , UsernamePasswordAuthenticationFilter.class); // 필터 순서 2 ( 로그인 )
         httpSecurity
                 .addFilterBefore(jwtFilter(), LoginFilter.class); // 필터 순서 1 ( 로그인 )
+        httpSecurity
+                .addFilterBefore(jwtLogoutFilter(), LogoutFilter.class); // 필터 순서 1 ( 로그아웃 )
 
+
+        // 세션을 유지하지 않도록 하는 설정 -> STATELESS
+        httpSecurity
+                .sessionManagement((session)->session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        // Http 주소허용 여부 설정 -> Default
+        httpSecurity
+                .authorizeHttpRequests((auth)->auth
+                        .requestMatchers("/login",
+                                "/user/create",
+                                "/user/check-nickname",
+                                "/user/check-username").permitAll()
+                        .requestMatchers("/refresh").permitAll()
+                        .anyRequest().authenticated()
+                );
 
         return httpSecurity.build();
 
