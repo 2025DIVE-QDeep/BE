@@ -107,4 +107,20 @@ public class ReissueService {
 
   // zeroCookie 메소드
 
+    public void zeroCookie(HttpServletResponse response){
+
+       Cookie cookie = new Cookie("refresh",null);
+       cookie.setMaxAge(0);
+       cookie.setPath("/");
+
+       response.addCookie(cookie);
+       response.setStatus(HttpStatus.OK.value());
+
+    }
+
+    @Transactional
+    public void deleteRefresh(String refresh){
+       reissueRepository.deleteByRefresh(refresh);
+    }
+
 }
