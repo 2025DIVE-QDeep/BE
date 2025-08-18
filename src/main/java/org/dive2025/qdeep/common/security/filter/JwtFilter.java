@@ -13,6 +13,7 @@ import org.dive2025.qdeep.common.security.dto.response.TokenInvalidCategoryRespo
 import org.dive2025.qdeep.common.security.service.AuthService;
 import org.dive2025.qdeep.common.security.util.JwtUtil;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -28,7 +29,9 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
     private final AntPathMatcher antPathMatcher;
-    private final AuthService authService;
+
+    @Autowired
+    private AuthService authService;
 
 
 
