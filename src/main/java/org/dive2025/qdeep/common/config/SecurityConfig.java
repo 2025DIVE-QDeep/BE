@@ -36,11 +36,7 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final ObjectMapper objectMapper;
     private final JwtUtil jwtUtil;
-    private final AntPathMatcher antPathMatcher;
     private final ReissueService reissueService;
-
-    @Autowired
-    private AuthService authService;
 
     @Bean
     public AntPathMatcher antPathMatcher(){
@@ -62,8 +58,7 @@ public class SecurityConfig {
     public JwtFilter jwtFilter(){
         return new JwtFilter(jwtUtil,
                 objectMapper,
-                antPathMatcher
-                ,authService);
+                antPathMatcher());
     }
 
 
