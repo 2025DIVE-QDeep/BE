@@ -8,12 +8,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dive2025.qdeep.common.exception.CustomException;
+import org.dive2025.qdeep.common.exception.ErrorCode;
+import org.dive2025.qdeep.common.security.auth.UserDetailsImpl;
 import org.dive2025.qdeep.common.security.dto.response.ExpiredJwtResponse;
 import org.dive2025.qdeep.common.security.dto.response.TokenInvalidCategoryResponse;
-import org.dive2025.qdeep.common.security.service.AuthService;
 import org.dive2025.qdeep.common.security.util.JwtUtil;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.dive2025.qdeep.domain.user.entity.User;
+import org.dive2025.qdeep.domain.user.repository.UserRepository;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -29,9 +34,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
     private final AntPathMatcher antPathMatcher;
-
-    @Autowired
-    private AuthService authService;
+    private final UserRepository userRepository;
 
 
 
@@ -44,6 +47,7 @@ public class JwtFilter extends OncePerRequestFilter {
         return antPathMatcher.match("/login",path)||
                 antPathMatcher.match("/refresh",path)||
                 antPathMatcher.match("/user/check-nickname",path)||
+                antPathMatcher.match("/user/create",path)||
                 antPathMatcher.match("/user/check-username",path);
     }
 
@@ -94,8 +98,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         SecurityContextHolder
                 .getContext()
-                .setAuthentication(authService
-                        .makeAuthenticationFromToken(accessToken));
+                .setAuthentication(makeAuthenticationFromToken(accessToken));
 
         filterChain.doFilter(request,response);
 
@@ -151,6 +154,20 @@ public class JwtFilter extends OncePerRequestFilter {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
+    }
+
+    public Authentication makeAuthenticationFromToken(String token){
+        String username = jwtUtil.getUsername(token);
+        String role = jwtUtil.getRole(token);
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(()->new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        UserDetailsImpl userDetails = new UserDetailsImpl(user);
+
+        return new UsernamePasswordAuthenticationToken(userDetails,
+                null,
+                userDetails.getAuthorities());
     }
 
 

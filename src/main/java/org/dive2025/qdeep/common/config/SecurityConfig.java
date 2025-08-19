@@ -3,14 +3,12 @@ package org.dive2025.qdeep.common.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.dive2025.qdeep.common.exception.ErrorCode;
 import org.dive2025.qdeep.common.security.filter.JwtFilter;
 import org.dive2025.qdeep.common.security.filter.JwtLogoutFilter;
 import org.dive2025.qdeep.common.security.filter.LoginFilter;
-import org.dive2025.qdeep.common.security.service.AuthService;
 import org.dive2025.qdeep.common.security.service.ReissueService;
 import org.dive2025.qdeep.common.security.util.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.dive2025.qdeep.domain.user.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,18 +35,14 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
     private final JwtUtil jwtUtil;
     private final ReissueService reissueService;
+    private final AntPathMatcher antPathMatcher;
+    private final UserRepository userRepository;
 
     @Bean
-    public AntPathMatcher antPathMatcher(){
-        return new AntPathMatcher();
-    }
-
-
-    @Bean
-    public LoginFilter loginFilter()
+    public LoginFilter loginFilter(AuthenticationManager authenticationManager)
             throws Exception{
         return new LoginFilter(objectMapper,
-                authenticationManager(authenticationConfiguration),
+                authenticationManager,
                 jwtUtil,
                 reissueService);
     }
@@ -58,7 +52,8 @@ public class SecurityConfig {
     public JwtFilter jwtFilter(){
         return new JwtFilter(jwtUtil,
                 objectMapper,
-                antPathMatcher());
+                antPathMatcher,
+                userRepository);
     }
 
 
@@ -76,65 +71,44 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager
             (AuthenticationConfiguration authenticationConfiguration)
             throws Exception{
-        return this.authenticationConfiguration.getAuthenticationManager();
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain
-            (HttpSecurity httpSecurity)
-            throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,
+                                                   LoginFilter loginFilter,
+                                                   JwtFilter jwtFilter,
+                                                   JwtLogoutFilter jwtLogoutFilter)
+            throws Exception {
 
         httpSecurity
-                .csrf((auth)->auth.disable());
-        httpSecurity
-                .formLogin((auth)->auth.disable());
-        httpSecurity
-                .httpBasic((auth)->auth.disable());
-        httpSecurity
+                .csrf((auth)->auth.disable())
+                .formLogin((auth)->auth.disable())
                 .httpBasic((auth)->auth.disable());
 
-        httpSecurity.addFilterAt(loginFilter()
-                , UsernamePasswordAuthenticationFilter.class); // 필터 순서 2 ( 로그인 )
-        httpSecurity
-                .addFilterBefore(jwtFilter(), LoginFilter.class); // 필터 순서 1 ( 로그인 )
-        httpSecurity
-                .addFilterBefore(jwtLogoutFilter(), LogoutFilter.class); // 필터 순서 1 ( 로그아웃 )
+        httpSecurity.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(jwtFilter, LoginFilter.class);
+        httpSecurity.addFilterBefore(jwtLogoutFilter, LogoutFilter.class);
 
+        httpSecurity.sessionManagement((session)->session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        // 세션을 유지하지 않도록 하는 설정 -> STATELESS
-        httpSecurity
-                .sessionManagement((session)->session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        httpSecurity.authorizeHttpRequests((auth)->auth
+                .requestMatchers("/login", "/user/create", "/user/check-nickname", "/user/check-username").permitAll()
+                .requestMatchers("/refresh").permitAll()
+                .anyRequest().authenticated()
+        );
 
-        // Http 주소허용 여부 설정 -> Default
-        httpSecurity
-                .authorizeHttpRequests((auth)->auth
-                        .requestMatchers("/login",
-                                "/user/create",
-                                "/user/check-nickname",
-                                "/user/check-username").permitAll()
-                        .requestMatchers("/refresh").permitAll()
-                        .anyRequest().authenticated()
-                );
-
-        // CORS 설정
-        httpSecurity
-                .cors((corsCustomizer)->corsCustomizer.configurationSource(new CorsConfigurationSource() {
-                    @Override
-                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                        CorsConfiguration configuration = new CorsConfiguration();
-
-                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000")); // 허용 출처 지정
-                        configuration.setAllowedMethods(Collections.singletonList("*")); // HTTP 메소드 지정
-                        configuration.setAllowCredentials(true); // 인증 정보를 포함한 요청을 허용
-                        configuration.setAllowedHeaders(Collections.singletonList("*")); // 클라이언트 요청 시 보낼 수 있는 헤더 지정
-                        configuration.setMaxAge(3600L); // 브라우저 preflight 요청캐싱 시간 지정
-
-                        return configuration;
-                    }
-                }));
+        httpSecurity.cors((corsCustomizer)->corsCustomizer.configurationSource(request -> {
+            CorsConfiguration configuration = new CorsConfiguration();
+            configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+            configuration.setAllowedMethods(Collections.singletonList("*"));
+            configuration.setAllowCredentials(true);
+            configuration.setAllowedHeaders(Collections.singletonList("*"));
+            configuration.setMaxAge(3600L);
+            return configuration;
+        }));
 
         return httpSecurity.build();
-
     }
 }
