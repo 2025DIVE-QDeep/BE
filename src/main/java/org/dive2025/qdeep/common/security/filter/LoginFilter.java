@@ -32,9 +32,10 @@ import java.util.Iterator;
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final ObjectMapper objectMapper;
-    private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final ReissueService reissueService;
+
+
 
 
     public LoginFilter(ObjectMapper objectMapper,
@@ -44,7 +45,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         this.objectMapper = objectMapper;
         this.jwtUtil = jwtUtil;
-        this.authenticationManager = authenticationManager;
         this.reissueService = reissueService;
         setAuthenticationManager(authenticationManager); // 부모클래스의 메소드를 통해 필드 초기화
     }
@@ -66,7 +66,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                     ,loginRequest.password());
 
             // AuthenticationManager에게 인증요청
-            return authenticationManager.authenticate(token);
+            return super.getAuthenticationManager().authenticate(token);
 
         } catch(IOException e) {
             // 인증 실패시 AuthenticationServiceException 발생
@@ -91,7 +91,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String role = authority.getAuthority();
 
         String access = jwtUtil.createJwt("access",username,role,600000L);
-        String refresh = jwtUtil.createJwt("refresh",username,role,8640000L);
+        String refresh = jwtUtil.createJwt("refresh",username,role,86400000L);
 
 
 
