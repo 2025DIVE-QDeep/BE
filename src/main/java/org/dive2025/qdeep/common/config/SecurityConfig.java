@@ -96,6 +96,7 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests((auth)->auth
                 .requestMatchers("/login", "/user/create", "/user/check-nickname", "/user/check-username").permitAll()
                 .requestMatchers("/refresh").permitAll()
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .anyRequest().authenticated()
         );
 

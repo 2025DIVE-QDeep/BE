@@ -44,10 +44,12 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException {
         String path = request.getRequestURI();
 
-        return antPathMatcher.match("/login",path)||
-                antPathMatcher.match("/refresh",path)||
-                antPathMatcher.match("/user/check-nickname",path)||
-                antPathMatcher.match("/user/check-username",path);
+        return antPathMatcher.match("/login", path) ||
+                antPathMatcher.match("/refresh", path) ||
+                antPathMatcher.match("/user/check-nickname", path) ||
+                antPathMatcher.match("/user/check-username", path) ||
+                antPathMatcher.match("/swagger-ui/**", path) ||
+                antPathMatcher.match("/v3/api-docs/**", path);
     }
 
 
