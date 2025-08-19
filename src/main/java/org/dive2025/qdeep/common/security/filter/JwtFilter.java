@@ -47,7 +47,6 @@ public class JwtFilter extends OncePerRequestFilter {
         return antPathMatcher.match("/login",path)||
                 antPathMatcher.match("/refresh",path)||
                 antPathMatcher.match("/user/check-nickname",path)||
-                antPathMatcher.match("/user/create",path)||
                 antPathMatcher.match("/user/check-username",path);
     }
 

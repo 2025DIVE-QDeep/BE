@@ -55,7 +55,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public void checkNickname(DuplicationCheckRequest request){
-        if(userRepository.findByNickname(request.content()).isPresent()){
+        if(userRepository.findByNickname(new Nickname(request.content())).isPresent()){
             throw new CustomException(ErrorCode.USER_NICKNAME_DUPLICATED);
         }
     }

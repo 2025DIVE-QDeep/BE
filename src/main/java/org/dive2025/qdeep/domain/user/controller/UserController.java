@@ -26,13 +26,13 @@ public class UserController {
 
     }
 
-    @GetMapping("check-username")
+    @GetMapping("/check-username")
     public ResponseEntity<?> checkUsername(@RequestBody DuplicationCheckRequest request){
         userService.checkUsername(request);
         return ResponseEntity.status(HttpStatus.OK).body(new DuplicationCheckResponse("해당 아이디는 사용 가능합니다."));
     }
 
-    @GetMapping("check-nickname")
+    @GetMapping("/check-nickname")
     public ResponseEntity<?> checkNickname(@RequestBody DuplicationCheckRequest request){
         userService.checkNickname(request);
         return ResponseEntity.status(HttpStatus.OK).body(new DuplicationCheckResponse("해당 닉네임은 사용 가능합니다."));
