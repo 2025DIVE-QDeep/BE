@@ -49,6 +49,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 antPathMatcher.match("/user/check-nickname", path) ||
                 antPathMatcher.match("/user/check-username", path) ||
                 antPathMatcher.match("/swagger-ui/**", path) ||
+                antPathMatcher.match("/gpt/**",path)||
                 antPathMatcher.match("/v3/api-docs/**", path);
     }
 

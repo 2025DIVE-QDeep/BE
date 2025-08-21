@@ -97,6 +97,7 @@ public class SecurityConfig {
                 .requestMatchers("/login", "/user/create", "/user/check-nickname", "/user/check-username").permitAll()
                 .requestMatchers("/refresh").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                .requestMatchers("/gpt/**").permitAll()
                 .anyRequest().authenticated()
         );
 
