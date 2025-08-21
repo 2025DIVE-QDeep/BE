@@ -1,5 +1,7 @@
 package org.dive2025.qdeep.domain.recommend.service;
 
+import org.dive2025.qdeep.common.exception.CustomException;
+import org.dive2025.qdeep.common.exception.ErrorCode;
 import org.dive2025.qdeep.common.infra.gpt.client.GptClient;
 import org.dive2025.qdeep.common.infra.gpt.dto.GptRequest;
 import org.dive2025.qdeep.common.infra.gpt.dto.GptResponse;
@@ -9,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class GptService {
@@ -21,14 +25,20 @@ public class GptService {
 
     public GptClientResponse processRequest(String prompt){
 
-        String reuslt =  gptClient
-                .sendMessage(new GptRequest(model,prompt))
-                .choices()
-                .get(0)
-                .message()
-                .content();
+        GptResponse gptResponse =  gptClient
+                .sendMessage(new GptRequest(model,prompt));
 
-        return new GptClientResponse(reuslt,
+        List<String> content = gptResponse.output()
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new CustomException(ErrorCode.GPT_RESPONSE_NOT_FOUND))
+                .content()
+                .stream()
+                .map(GptResponse.Content::text)
+                .collect(Collectors
+                        .toList());
+
+        return new GptClientResponse(content,
                 LocalDateTime.now().toString());
 
     }

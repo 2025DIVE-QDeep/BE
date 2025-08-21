@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public record GptRequest(String model, List<Message> messages) {
+public record GptRequest(String model, String input) {
 
-    public GptRequest(String model,String prompt){
-        this(model,new ArrayList<>(List.of(new Message("user",prompt))));
-    }
 
 }
