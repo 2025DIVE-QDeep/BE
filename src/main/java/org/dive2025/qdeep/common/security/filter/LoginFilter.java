@@ -100,6 +100,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setStatus(HttpStatus.OK.value());
         log.info("[ 로그인 성공 ] TIME : {} , USER : {}", LocalDateTime.now(),username);
 
+
     }
 
     @Override

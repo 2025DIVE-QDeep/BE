@@ -96,7 +96,7 @@ public class GptService {
 - address
 - hours
 - description
-- latitude
+- laitude
 - longtitude
 다른 정보는 넣지 말고, JSON 구조만 반환해. 그리고 장소는 3개를 추천해
 """;

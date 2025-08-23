@@ -94,8 +94,10 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         httpSecurity.authorizeHttpRequests((auth)->auth
-                .requestMatchers("/login", "/user/create", "/user/check-nickname", "/user/check-username").permitAll()
+                .requestMatchers("/login", "/user/create", "/user/check-nickname", "/user/check-username","/user/show/ranking").permitAll()
                 .requestMatchers("/refresh").permitAll()
+                .requestMatchers("/board/list").permitAll()
+                .requestMatchers("/store/load","/store/list").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/gpt/**").permitAll()
                 .anyRequest().authenticated()

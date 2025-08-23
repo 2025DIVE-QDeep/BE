@@ -3,6 +3,10 @@ spring:
     jdbc:
       initialize-schema: always # 스프링 부트가 세션을 자동 생성하도록 설정
 
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
   datasource:
     url: ${MYSQL_URL}
     username: ${MYSQL_USERNAME}
