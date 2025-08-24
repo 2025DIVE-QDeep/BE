@@ -23,28 +23,8 @@ public class StoreController {
     @Autowired
     private StoreService storeService;
 
-    // 가게를 찜하는 메소드
-    @PostMapping("/save")
-    public ResponseEntity<?> saveStore(@RequestBody SaveStoreRequest saveStoreRequest,
-                                       @AuthenticationPrincipal UserDetailsImpl userDetails){
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(storeService.saveStore(saveStoreRequest,
-                        userDetails.getUsername()));
-
-    }
-
-    // 찜한 가게를 삭제하는 메소드
-    @DeleteMapping("/delete")
-    public ResponseEntity<DeleteStoreResponse> deleteSavedStore(@RequestBody DeleteStoreRequest deleteStoreRequest,
-                                                                @AuthenticationPrincipal UserDetailsImpl userDetails){
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(storeService.deleteSavedStore(deleteStoreRequest,
-                        userDetails.getUsername()));
-    }
-
-    // 가게 상세 페이지
+    // 가게 상세 페이지 보여주기
     @GetMapping("/load")
     public ResponseEntity<ShowStoreResponse> showStore(@RequestBody StoredInformationRequest storedInformationRequest){
 
@@ -54,7 +34,7 @@ public class StoreController {
 
     }
 
-    // 가게 리스트
+    // 가게 리스트 보여주기
     @GetMapping("/list")
     public ResponseEntity<ShowListByAddressResponse> showListByAddressPart(@RequestParam(name="addressPart") String addressPart){
         return ResponseEntity.status(HttpStatus.OK)

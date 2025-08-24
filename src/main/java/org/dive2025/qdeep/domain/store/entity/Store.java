@@ -5,10 +5,12 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.dive2025.qdeep.domain.board.entity.Board;
+import org.dive2025.qdeep.domain.favorite.entity.Favorite;
 import org.dive2025.qdeep.domain.user.entity.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Builder
@@ -22,7 +24,6 @@ public class Store {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     private String name;
 
     private String address;
@@ -35,21 +36,27 @@ public class Store {
 
     private double longtitude;
 
-    @JsonManagedReference
+    private Long firstUserId;
+
     @OneToMany(mappedBy = "store",cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<Board> board = new ArrayList<>(); // ⭐ 초기화 필수
+    private List<Board> board = new ArrayList<>();
 
     public void addBoard(Board board) {
         this.board.add(board);
         board.setStore(this);
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    @JsonBackReference
-    private User user;
+    @OneToMany(mappedBy = "store",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Favorite> favorite = new ArrayList<>();
 
-    private Long firstUserId;
+    public void addFavorite(Favorite favorite){
+        this.favorite.add(favorite);
+        favorite.setStore(this);
+    }
 
+    public void deleteFavorite(Favorite favorite){
+        this.favorite.remove(favorite);
+        favorite.setStore(this);
+    }
 
 }
