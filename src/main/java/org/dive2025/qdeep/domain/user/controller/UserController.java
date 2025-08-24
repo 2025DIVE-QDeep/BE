@@ -77,6 +77,7 @@ public class UserController {
 
     }
 
+    @Operation(summary = "내 랭킹 확인하기",description = "나의 랭킹을 확인하는 API")
     @GetMapping("/show/ranking")
     public ResponseEntity<ShowRankingResponse> showRanking(){
 

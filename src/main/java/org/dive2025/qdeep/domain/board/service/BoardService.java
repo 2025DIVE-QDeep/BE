@@ -52,10 +52,8 @@ public class BoardService {
                 .user(user)
                 .build();
 
-        // 양쪽 리스트에 추가
-        store.addBoard(board);
-        user.addBoard(board);
-        user.addStore(store);
+        user.addBoard(board); // oneToMany에 대해서 board 필드 추가
+        store.addBoard(board); // oneToMany에 대해서 board 필드 추가
 
         // 첫 작성자 체크
         if(store.getBoard().size() == 1) { // 방금 추가했으니까 size == 1이면 첫 작성자
@@ -65,7 +63,7 @@ public class BoardService {
             user.addAmountOfReview();
         }
 
-        boardRepository.save(board);
+        userRepository.save(user);
         storeRepository.save(store);
 
         return new BoardCreationResponse(

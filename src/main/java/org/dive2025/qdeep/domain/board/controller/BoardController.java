@@ -35,7 +35,4 @@ public class BoardController {
                 .body(boardService.showBoardByStore(boardListRequest));
     }
 
-
-
-
 }
