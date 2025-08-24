@@ -2,6 +2,8 @@ package org.dive2025.qdeep.domain.store.service;
 
 import org.dive2025.qdeep.common.exception.CustomException;
 import org.dive2025.qdeep.common.exception.ErrorCode;
+import org.dive2025.qdeep.domain.favorite.entity.Favorite;
+import org.dive2025.qdeep.domain.favorite.repository.FavoriteRepository;
 import org.dive2025.qdeep.domain.recommend.dto.response.RecommendationResponse;
 import org.dive2025.qdeep.domain.store.dto.request.DeleteStoreRequest;
 import org.dive2025.qdeep.domain.store.dto.request.SaveStoreRequest;
@@ -29,6 +31,9 @@ public class StoreService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private FavoriteRepository favoriteRepository;
+
     @Transactional
     public List<SavedStoreResponse> saveAllResponsesBatch(List<RecommendationResponse> responses) {
         return responses.stream()
@@ -53,7 +58,6 @@ public class StoreService {
                 })
                 .collect(Collectors.toList());
     }
-
 
     public Store checkDuplicationSaving(Store store){
 
@@ -84,7 +88,7 @@ public class StoreService {
         Store store = storeRepository.findById(saveStoreRequest.storeId())
                 .orElseThrow(()->new CustomException(ErrorCode.STORE_NOT_FOUND));
 
-        user.addStore(store);
+
         userRepository.save(user);
 
         return new ShowStoreResponse(store.getName(),
@@ -95,20 +99,6 @@ public class StoreService {
 
     }
 
-    @Transactional
-    public DeleteStoreResponse deleteSavedStore(DeleteStoreRequest deleteStoreRequest,String username){
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(()->new CustomException(ErrorCode.USER_NOT_FOUND));
-
-        Store store = storeRepository.findById(deleteStoreRequest.storeId())
-                .orElseThrow(()->new CustomException(ErrorCode.STORE_NOT_FOUND));
-
-        user.removeStore(store);
-        userRepository.save(user);
-
-        return new DeleteStoreResponse(deleteStoreRequest.storeId());
-
-    }
 
     public List<Store> findStoreByAddress(String addressPart){
         List<Store> stores = storeRepository.findByAddressContaining(addressPart);
