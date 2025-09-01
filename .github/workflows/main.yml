@@ -51,7 +51,7 @@ jobs:
       # 7️⃣ Docker 이미지 빌드
       - name: Build Docker Image
         run: |
-          docker build -t Kangwooju/deep:latest .
+          docker build -t kangwooju/test:latest .
 
       # 8️⃣ Docker Hub 로그인
       - name: Docker Login
@@ -62,4 +62,4 @@ jobs:
 
       # 9️⃣ Docker 이미지 푸시
       - name: Push Docker Image
-        run: docker push Kangwooju/deep:latest
+        run: docker push kangwooju/test:latest
