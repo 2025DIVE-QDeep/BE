@@ -34,12 +34,12 @@ jobs:
             ${{ runner.os }}-gradle-
 
       # 4️⃣ Spring Boot prod yml 생성
-      - name: Make application-prod.yml
-        run: |
-          cd ./src/main/resources
-          touch ./application-prod.yml
-          echo "${{ secrets.PROPERTIES_PROD }}" > ./application-prod.yml
-        shell: bash
+      #- name: Make application-prod.yml
+      #  run: |
+      #    cd ./src/main/resources
+      #   touch ./application-prod.yml
+      #    echo "${{ secrets.PROPERTIES_PROD }}" > ./application-prod.yml
+      #  shell: bash
 
       # 5️⃣ 빌드 (테스트 제외)
       - name: Build With Gradle
