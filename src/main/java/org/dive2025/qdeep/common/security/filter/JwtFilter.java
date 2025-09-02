@@ -54,6 +54,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 antPathMatcher.match("/show/ranking",path)||
                 antPathMatcher.match("/swagger-ui/**", path) ||
                 antPathMatcher.match("/gpt/**",path)||
+                antPathMatcher.match("/",path)||
+                antPathMatcher.match("/favicon.ico",path)||
                 antPathMatcher.match("/v3/api-docs/**", path);
     }
 
