@@ -1,5 +1,6 @@
 package org.dive2025.qdeep.domain.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.dive2025.qdeep.domain.board.entity.Board;
@@ -42,6 +43,7 @@ public class User {
     @Column(name = "creationDate",nullable = false)
     private LocalDateTime creationDate;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true) // JPA 고아객체 자동삭제
     private List<Board> board = new ArrayList<>();
 
@@ -50,7 +52,8 @@ public class User {
         board.setUser(this);
     }
 
-    @OneToMany(mappedBy = "favorite",cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Favorite> favorite = new ArrayList<>();
 
     public void addFavorite(Favorite favorite){

@@ -14,10 +14,6 @@ import java.util.Optional;
 @Repository
 public interface BoardRepository extends JpaRepository<Board,Long> {
 
-    List<Board> findBoardByStore(Store store);
-
-    boolean existsByUserAndStore(User user, Store store);
-
     List<Board> findBoardByUser(User user);
 
 }
