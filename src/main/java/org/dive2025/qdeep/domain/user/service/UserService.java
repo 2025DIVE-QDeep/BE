@@ -6,10 +6,7 @@ import org.dive2025.qdeep.domain.board.repository.BoardRepository;
 import org.dive2025.qdeep.domain.user.Vo.Nickname;
 import org.dive2025.qdeep.domain.user.dto.request.DuplicationCheckRequest;
 import org.dive2025.qdeep.domain.user.dto.request.UserCreateRequest;
-import org.dive2025.qdeep.domain.user.dto.response.ShowRankingResponse;
-import org.dive2025.qdeep.domain.user.dto.response.UserCreateResponse;
-import org.dive2025.qdeep.domain.user.dto.response.UserInformationResponse;
-import org.dive2025.qdeep.domain.user.dto.response.UserReviewResponse;
+import org.dive2025.qdeep.domain.user.dto.response.*;
 import org.dive2025.qdeep.domain.user.entity.Role;
 import org.dive2025.qdeep.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.dive2025.qdeep.domain.user.entity.User;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -95,7 +93,14 @@ public class UserService {
         Pageable pageable = PageRequest.of(0,10);
         List<User> topUsers = userRepository.findTop10ByOrderByAmountOfFirstDesc(pageable);
 
-        return new ShowRankingResponse(topUsers);
+        List<UserRankingInfo> ranking = topUsers.stream()
+                .map(user->new UserRankingInfo(
+                        user.getNickname().getNickname(),
+                        user.getAmountOfFirst(),
+                        user.getAmountOfReview()
+                )).collect(Collectors.toList());
+
+        return new ShowRankingResponse(ranking);
     }
 
 }
