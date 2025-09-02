@@ -38,6 +38,7 @@ public class Store {
 
     private Long firstUserId;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "store",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Board> board = new ArrayList<>();
 
@@ -46,6 +47,7 @@ public class Store {
         board.setStore(this);
     }
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "store",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Favorite> favorite = new ArrayList<>();
 
