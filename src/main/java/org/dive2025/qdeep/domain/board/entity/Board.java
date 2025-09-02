@@ -38,5 +38,4 @@ public class Board {
     private User user;
 
 
-
 }
