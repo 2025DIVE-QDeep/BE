@@ -1,0 +1,88 @@
+package org.dive2025.qdeep.domain.board.service;
+
+import org.dive2025.qdeep.common.exception.CustomException;
+import org.dive2025.qdeep.common.exception.ErrorCode;
+import org.dive2025.qdeep.domain.board.dto.request.BoardListRequest;
+import org.dive2025.qdeep.domain.board.dto.request.BoardRequest;
+import org.dive2025.qdeep.domain.board.dto.response.BoardCreationResponse;
+import org.dive2025.qdeep.domain.board.dto.response.BoardListResponse;
+import org.dive2025.qdeep.domain.board.entity.Board;
+import org.dive2025.qdeep.domain.board.repository.BoardRepository;
+import org.dive2025.qdeep.domain.store.entity.Store;
+import org.dive2025.qdeep.domain.store.repository.StoreRepository;
+import org.dive2025.qdeep.domain.user.entity.User;
+import org.dive2025.qdeep.domain.user.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.function.BiPredicate;
+
+@Service
+public class BoardService {
+
+    @Autowired
+    private BoardRepository boardRepository;
+
+    @Autowired
+    private StoreRepository storeRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Transactional
+    public BoardCreationResponse create(BoardRequest boardRequest){
+
+        Store store = storeRepository.findById(boardRequest.storeId())
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+
+        User user = userRepository.findByUsername(boardRequest.username())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 중복 체크 먼저
+        if (boardRepository.existsByUserAndStore(user, store)) {
+            throw new CustomException(ErrorCode.ONLY_ONCE_REVIEW_PER_USER);
+        }
+
+        Board board = Board.builder()
+                .postedTime(LocalDateTime.now())
+                .content(boardRequest.content())
+                .store(store)
+                .user(user)
+                .build();
+
+        user.addBoard(board); // oneToMany에 대해서 board 필드 추가
+        store.addBoard(board); // oneToMany에 대해서 board 필드 추가
+
+        // 첫 작성자 체크
+        if(store.getBoard().size() == 1) { // 방금 추가했으니까 size == 1이면 첫 작성자
+            user.addAmountOfFirst();
+            store.setFirstUserId(user.getId());
+        } else {
+            user.addAmountOfReview();
+        }
+
+        userRepository.save(user);
+        storeRepository.save(store);
+
+        return new BoardCreationResponse(
+                boardRequest.content(),
+                user.getNickname().getNickname(),
+                LocalDateTime.now().toString(),
+                store.getName(),
+                store.getAddress(),
+                store.getHours()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public BoardListResponse showBoardByStore(BoardListRequest boardListRequest){
+
+        Store store = storeRepository.findByIdWithBoards(boardListRequest.storeId())
+                .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
+
+        return new BoardListResponse(store.getBoard());
+    }
+
+}
