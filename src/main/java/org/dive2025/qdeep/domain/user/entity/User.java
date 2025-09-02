@@ -50,7 +50,7 @@ public class User {
         board.setUser(this);
     }
 
-    @OneToMany(mappedBy = "favorite",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Favorite> favorite = new ArrayList<>();
 
     public void addFavorite(Favorite favorite){
