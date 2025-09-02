@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -57,11 +58,11 @@ public class UserController {
     @Operation(summary = "회원정보 ",description = "마이 페이지 내에 회원정보를 보여주는 API")
     @GetMapping("/show/information")
     public ResponseEntity<UserInformationResponse> showMyInformation
-            (@RequestBody ShowUserInformationRequest showUserInformationRequest){
+            (@AuthenticationPrincipal UserDetails userDetails){
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(userService
-                        .showInformation(showUserInformationRequest.username()));
+                        .showInformation(userDetails.getUsername()));
 
     }
 
@@ -69,11 +70,11 @@ public class UserController {
     @Operation(summary = "내가 쓴 리뷰",description = "내가 쓴 리뷰를 보여주는 API")
     @GetMapping("/show/myReview")
     public ResponseEntity<UserReviewResponse> showReviewListOfMine
-            (@RequestBody ShowUserReviewRequest showUserReviewRequest){
+            (@AuthenticationPrincipal UserDetails userDetails){
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(userService
-                        .showReviewListOfMine(showUserReviewRequest.username()));
+                        .showReviewListOfMine(userDetails.getUsername()));
 
     }
 

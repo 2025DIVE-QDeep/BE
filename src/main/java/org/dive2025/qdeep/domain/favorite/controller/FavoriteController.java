@@ -2,6 +2,7 @@ package org.dive2025.qdeep.domain.favorite.controller;
 
 import org.dive2025.qdeep.domain.favorite.dto.request.AddFavoriteRequest;
 import org.dive2025.qdeep.domain.favorite.dto.request.DeleteFavoriteRequest;
+import org.dive2025.qdeep.domain.favorite.dto.response.AddFavoriteResponse;
 import org.dive2025.qdeep.domain.favorite.dto.response.DeleteFavoriteResponse;
 import org.dive2025.qdeep.domain.favorite.service.FavoriteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class FavoriteController {
 
     // 찜하기 기능
     @PostMapping("/add")
-    public ResponseEntity<?> addFavorite(@RequestBody AddFavoriteRequest addFavoriteRequest){
+    public ResponseEntity<AddFavoriteResponse> addFavorite(@RequestBody AddFavoriteRequest addFavoriteRequest){
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(favoriteService.addFavorite(addFavoriteRequest));

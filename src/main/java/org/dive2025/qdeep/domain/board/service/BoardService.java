@@ -13,6 +13,7 @@ import org.dive2025.qdeep.domain.store.repository.StoreRepository;
 import org.dive2025.qdeep.domain.user.entity.User;
 import org.dive2025.qdeep.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,10 +41,6 @@ public class BoardService {
         User user = userRepository.findByUsername(boardRequest.username())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        // 중복 체크 먼저
-        if (boardRepository.existsByUserAndStore(user, store)) {
-            throw new CustomException(ErrorCode.ONLY_ONCE_REVIEW_PER_USER);
-        }
 
         Board board = Board.builder()
                 .postedTime(LocalDateTime.now())
@@ -54,6 +51,12 @@ public class BoardService {
 
         user.addBoard(board); // oneToMany에 대해서 board 필드 추가
         store.addBoard(board); // oneToMany에 대해서 board 필드 추가
+
+        try {
+            boardRepository.save(board); // 또는 userRepository.save(user) + storeRepository.save(store)
+        } catch (DataIntegrityViolationException e) {
+            throw new CustomException(ErrorCode.ONLY_ONCE_REVIEW_PER_USER);
+        }
 
         // 첫 작성자 체크
         if(store.getBoard().size() == 1) { // 방금 추가했으니까 size == 1이면 첫 작성자
