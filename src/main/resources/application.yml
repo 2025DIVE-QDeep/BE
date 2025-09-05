@@ -24,8 +24,26 @@ spring:
   jwt:
     secret: ${JWT_SECRET} # JWT SECRET키
 
+  servlet:
+    multipart:
+      max-file-size: 10MB # 업로드할 수 있는 개별 파일의 최대 크기. 기본 1MB
+      max-request-size: 10MB #multipart/form-data 요청의 최대 허용 크기. 기본 10MB
+
+
 openai:
   model : gpt-3.5-turbo
   api :
     key : ${OPENAI_API_KEY}
     url : https://api.openai.com/v1/responses
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${ACCESS_KEY}
+      secret-key: ${SECRET_KEY}
+    region:
+      static: ap-northeast-2  # 버킷의 리전
+    s3:
+      bucket: kangwooju-bucket-s3    # 버킷 이름
+    stack:
+      auto: false
