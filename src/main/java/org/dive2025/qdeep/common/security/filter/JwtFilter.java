@@ -56,6 +56,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 antPathMatcher.match("/gpt/**",path)||
                 antPathMatcher.match("/",path)||
                 antPathMatcher.match("/favicon.ico",path)||
+                antPathMatcher.match("/S3File/getImages",path)||
                 antPathMatcher.match("/v3/api-docs/**", path);
     }
 
