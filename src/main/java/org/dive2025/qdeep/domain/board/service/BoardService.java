@@ -8,6 +8,8 @@ import org.dive2025.qdeep.domain.board.dto.response.BoardCreationResponse;
 import org.dive2025.qdeep.domain.board.dto.response.BoardListResponse;
 import org.dive2025.qdeep.domain.board.entity.Board;
 import org.dive2025.qdeep.domain.board.repository.BoardRepository;
+import org.dive2025.qdeep.domain.file.entity.S3File;
+import org.dive2025.qdeep.domain.file.service.S3FileService;
 import org.dive2025.qdeep.domain.store.entity.Store;
 import org.dive2025.qdeep.domain.store.repository.StoreRepository;
 import org.dive2025.qdeep.domain.user.entity.User;
@@ -16,9 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 @Service
 public class BoardService {
@@ -32,8 +37,11 @@ public class BoardService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private S3FileService s3FileService;
+
     @Transactional
-    public BoardCreationResponse create(BoardRequest boardRequest){
+    public BoardCreationResponse create(BoardRequest boardRequest, List<MultipartFile> files){
 
         Store store = storeRepository.findById(boardRequest.storeId())
                 .orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
@@ -69,13 +77,22 @@ public class BoardService {
         userRepository.save(user);
         storeRepository.save(store);
 
+        List<S3File> uploadedFiles = s3FileService.uploadFile(files,board);
+        boardRepository.save(board);
+
+        List<String> urls = uploadedFiles
+                .stream()
+                .map(S3File::getKey)
+                .collect(Collectors.toList());
+
         return new BoardCreationResponse(
                 boardRequest.content(),
                 user.getNickname().getNickname(),
-                LocalDateTime.now().toString(),
+                board.getPostedTime().toString(),
                 store.getName(),
                 store.getAddress(),
-                store.getHours()
+                store.getHours(),
+                urls
         );
     }
 
@@ -87,5 +104,7 @@ public class BoardService {
 
         return new BoardListResponse(store.getBoard());
     }
+
+
 
 }
