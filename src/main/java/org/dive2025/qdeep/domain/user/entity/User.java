@@ -65,9 +65,6 @@ public class User {
         this.nickname = nickname;
     }
 
-    public void removeBoard(Board board){
-        this.board.remove(board);
-    }
 
     public void addAmountOfFirst() {
         if (this.amountOfFirst == null) this.amountOfFirst = 0;
