@@ -56,11 +56,11 @@ public class JwtFilter extends OncePerRequestFilter {
                 antPathMatcher.match("/favicon.ico", path) ||
                 antPathMatcher.match("/v3/api-docs/**", path) ||
                 antPathMatcher.match("/swagger-ui/**", path) ||
-                antPathMatcher.match("/swagger-ui.html", path) ||
-                antPathMatcher.match("/swagger-ui/index.html", path) ||
-                antPathMatcher.match("/swagger-resources/**", path) ||
-                antPathMatcher.match("/webjars/**", path) ||
-                antPathMatcher.match("/gpt/**", path);
+                antPathMatcher.match("/gpt/**",path)||
+                antPathMatcher.match("/S3File/getImages",path)||
+                antPathMatcher.match("/v3/api-docs/**", path)||
+                antPathMatcher.match("/webjars/**", path);
+            
     }
 
 
