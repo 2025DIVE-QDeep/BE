@@ -48,16 +48,19 @@ public class JwtFilter extends OncePerRequestFilter {
                 antPathMatcher.match("/refresh", path) ||
                 antPathMatcher.match("/user/check-nickname", path) ||
                 antPathMatcher.match("/user/check-username", path) ||
-                antPathMatcher.match("/board/list",path)||
-                antPathMatcher.match("/store/load",path)||
-                antPathMatcher.match("/store/list",path)||
-                antPathMatcher.match("/show/ranking",path)||
+                antPathMatcher.match("/board/list", path) ||
+                antPathMatcher.match("/store/load", path) ||
+                antPathMatcher.match("/store/list", path) ||
+                antPathMatcher.match("/show/ranking", path) ||
+                antPathMatcher.match("/", path) ||
+                antPathMatcher.match("/favicon.ico", path) ||
+                antPathMatcher.match("/v3/api-docs/**", path) ||
                 antPathMatcher.match("/swagger-ui/**", path) ||
                 antPathMatcher.match("/gpt/**",path)||
-                antPathMatcher.match("/",path)||
-                antPathMatcher.match("/favicon.ico",path)||
                 antPathMatcher.match("/S3File/getImages",path)||
                 antPathMatcher.match("/v3/api-docs/**", path);
+                antPathMatcher.match("/webjars/**", path) ||
+            
     }
 
 
