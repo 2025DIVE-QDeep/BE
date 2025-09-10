@@ -155,5 +155,31 @@ public class SwaggerConfig {
 
     }
 
+    /*
+    파일 API 레퍼런스 설정
+     */
+    @Bean
+    public GroupedOpenApi fileAPI(){
+        return GroupedOpenApi.builder()
+                .group("파일 API")
+                .pathsToMatch("/S3File/**")
+                .addOpenApiCustomizer(fileAPICustomizer())
+                .build();
+    }
+
+    @Bean
+    public OpenApiCustomizer fileAPICustomizer(){
+        return openApi -> openApi.info(new Info()
+                .title("파일 API")
+                .description("파일 업로드 및 삭제/로드 API")
+                .version("1.0"))
+                .components(new Components()
+                        .addSecuritySchemes("bearerAuth",
+                                new SecurityScheme()
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")));
+    }
+
 
 }
