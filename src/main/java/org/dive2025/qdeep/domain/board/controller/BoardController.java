@@ -1,8 +1,10 @@
 package org.dive2025.qdeep.domain.board.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,6 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/board")
@@ -30,23 +35,29 @@ public class BoardController {
             description = "내가 방문한 장소에 대해 리뷰쓰는 API (Authorization)",
             security = @SecurityRequirement(name = "bearerAuth"),
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "내가 방문한 장소에 대해 리뷰를 쓰는 API",
+                    description = """
+        리뷰 작성 API (Authorization)
+        - 'board'는 JSON으로 작성
+        - 'files'는 form-data로 업로드 (선택)
+        """,
                     required = true,
                     content = @Content(
-                            mediaType = "application/json",
-                            examples = {
-                                    @ExampleObject(
-                                            name = "리뷰 작성하기 요청 예시",
-                                            value = """
-                        {
-                          "content" : "테스트용 컨텐츠",
-                          "username" : "test1",
-                          "storeId" : "2"
-                        }
-                        """
-                                    )
-                            }
-                    )
+                                    mediaType = "multipart/form-data",
+                                    schema = @Schema(type = "object", description = "리뷰 작성 파트"),
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "리뷰 JSON 예시",
+                                                    value = """
+                                {
+                                  "content": "테스트용 컨텐츠",
+                                  "username": "test1",
+                                  "storeId": "2"
+                                }
+                                """
+                                            )
+                                    }
+                            )
+
             ),
             responses = {
                     @ApiResponse(
@@ -85,11 +96,14 @@ public class BoardController {
             })
     @PostMapping("/create")
     public ResponseEntity<BoardCreationResponse> create
-    (@RequestBody BoardRequest boardRequest){
+    (@RequestPart("board") BoardRequest boardRequest,
+     @RequestPart(value = "files",required = false) List<MultipartFile> files){
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(boardService.create(boardRequest));
+                .body(boardService.create(boardRequest,files));
     }
+
+
 
     // Store과 관련된 board(리뷰)를 보여주는 메소드
     @Operation(summary = "해당 장소와 관련된 리뷰글을 보여주는 기능",

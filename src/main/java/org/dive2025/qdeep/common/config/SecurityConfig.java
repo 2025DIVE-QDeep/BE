@@ -100,6 +100,9 @@ public class SecurityConfig {
                 .requestMatchers("/store/load","/store/list").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/gpt/**").permitAll()
+                .requestMatchers("/S3File/getImages").permitAll()
+                .requestMatchers("/").permitAll()
+                .requestMatchers("/favicon.ico").permitAll()
                 .anyRequest().authenticated()
         );
 
