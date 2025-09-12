@@ -76,8 +76,9 @@ These insights inspired the design of our platform, aimed at encouraging explora
 <img width="427" height="800" alt="스크린샷 2025-09-12 오후 3 43 20" src="https://github.com/user-attachments/assets/adf8362f-a34f-461e-b8b1-270a44e3182f" />
 <img width="419" height="797" alt="스크린샷 2025-09-12 오후 3 43 07" src="https://github.com/user-attachments/assets/67b1ba8d-ca38-44c2-858a-c38d5958b5be" />
 <img width="427" height="789" alt="스크린샷 2025-09-12 오후 3 44 46" src="https://github.com/user-attachments/assets/01500bd4-561d-4fa9-8f6b-039dbe69682a" />
+<br><br>
 
-- Ranking System: Displays top 10 users based on scores in ascending order, promoting friendly competition and engagement
+- Ranking System: Displays top 10 users based on scores in ascending order, promoting friendly competition and engagement <br><br>
 <img width="441" height="786" alt="스크린샷 2025-09-12 오후 3 43 29" src="https://github.com/user-attachments/assets/a6c4117b-64bd-408b-883c-60e0fedd2d04" />
 
 
