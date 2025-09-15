@@ -1,7 +1,6 @@
 package org.dive2025.qdeep.domain.board.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,7 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.dive2025.qdeep.domain.board.dto.request.BoardListRequest;
 import org.dive2025.qdeep.domain.board.dto.request.BoardRequest;
 import org.dive2025.qdeep.domain.board.dto.response.BoardCreationResponse;
-import org.dive2025.qdeep.domain.board.dto.response.BoardListResponse;
+import org.dive2025.qdeep.domain.board.entity.Board;
 import org.dive2025.qdeep.domain.board.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -147,7 +146,7 @@ public class BoardController {
 
             ))
     @GetMapping ("/list")
-    ResponseEntity<BoardListResponse> showBoardByStore
+    ResponseEntity<List<Board>> showBoardByStore
             (@RequestBody BoardListRequest boardListRequest){
 
         return ResponseEntity.status(HttpStatus.OK)
