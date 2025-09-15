@@ -119,4 +119,16 @@ public class S3FileService {
                 .map(file->baseURL+file.getKey())
                 .collect(Collectors.toList());
     }
+
+    public List<String> getUrls(List<MultipartFile> files,Board board){
+
+        List<S3File> uploadedFiles = uploadFile(files,board);
+        boardRepository.save(board);
+
+        return uploadedFiles
+                .stream()
+                .map(S3File::getKey)
+                .collect(Collectors.toList());
+
+    }
 }

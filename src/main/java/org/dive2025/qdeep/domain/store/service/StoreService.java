@@ -28,12 +28,6 @@ public class StoreService {
     @Autowired
     private StoreRepository storeRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private FavoriteRepository favoriteRepository;
-
     @Transactional
     public List<SavedStoreResponse> saveAllResponsesBatch(List<RecommendationResponse> responses) {
         return responses.stream()
@@ -80,31 +74,10 @@ public class StoreService {
                 store.getDescription());
     }
 
-    @Transactional
-    public ShowStoreResponse saveStore(SaveStoreRequest saveStoreRequest,String username){
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(()->new CustomException(ErrorCode.USER_NOT_FOUND));
-
-        Store store = storeRepository.findById(saveStoreRequest.storeId())
-                .orElseThrow(()->new CustomException(ErrorCode.STORE_NOT_FOUND));
-
-
-        userRepository.save(user);
-
-        return new ShowStoreResponse(store.getName(),
-                store.getAddress(),
-                store.getHours(),
-                store.getDescription());
-
-
-    }
-
-
     public List<Store> findStoreByAddress(String addressPart){
         List<Store> stores = storeRepository.findByAddressContaining(addressPart);
         return stores;
     }
-
 
 
 }
