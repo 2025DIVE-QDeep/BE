@@ -37,13 +37,8 @@ public class FavoriteService {
     public AddFavoriteResponse addFavorite(AddFavoriteRequest addFavoriteRequest){
 
 
-        User user = userRepository
-                .getUserByfindByIdOnly(addFavoriteRequest.userId(),
-                        entityManager);
-
-        Store store = storeRepository
-                .getStoreByIdOnly(addFavoriteRequest.storeId(),
-                        entityManager);
+        User user = entityManager.getReference(User.class,addFavoriteRequest.userId());
+        Store store = entityManager.getReference(Store.class,addFavoriteRequest.storeId());
 
         Favorite favorite = Favorite.builder()
                 .user(user)
@@ -64,18 +59,14 @@ public class FavoriteService {
     public DeleteFavoriteResponse deleteFavorite(DeleteFavoriteRequest deleteFavoriteRequest){
 
 
-        Favorite favorite = favoriteRepository
-                .getFavoriteByFindByUser(deleteFavoriteRequest.userId(),
-                        deleteFavoriteRequest.storeId(),
-                        entityManager);
+        Favorite favorite = entityManager
+                .getReference(Favorite.class,
+                        favoriteRepository.findByUserIdAndStoreId(deleteFavoriteRequest.userId(),
+                                deleteFavoriteRequest.storeId())
+                                .orElseThrow(()->new CustomException(ErrorCode.FAVORITE_NOT_FOUND)));
 
-        User user = userRepository
-                .getUserByfindByIdOnly(deleteFavoriteRequest.userId(),entityManager);
-
-        Store store = storeRepository
-                .getStoreByIdOnly(deleteFavoriteRequest.storeId(),
-                        entityManager);
-
+        User user = entityManager.getReference(User.class,deleteFavoriteRequest.userId());
+        Store store = entityManager.getReference(Store.class,deleteFavoriteRequest.storeId());
 
         // oneToMany를 가지는 객체에서 컬렉션의 요소 제거해주기 -> 영속성 관리
         user.deleteFavorite(favorite);
@@ -86,4 +77,5 @@ public class FavoriteService {
 
         return new DeleteFavoriteResponse(user.getUsername(),store.getName());
     }
+
 }

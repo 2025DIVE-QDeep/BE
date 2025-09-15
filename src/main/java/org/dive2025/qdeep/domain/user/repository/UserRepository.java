@@ -48,10 +48,5 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     }
 
-    default User getUserByfindByIdOnly(Long userId,EntityManager entityManager){
-        Long id = findByIdOnly(userId)
-                .orElseThrow(()->new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        return entityManager.getReference(User.class,id);
-    }
 }

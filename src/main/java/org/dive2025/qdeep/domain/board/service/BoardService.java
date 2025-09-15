@@ -30,25 +30,17 @@ public class BoardService {
     private BoardRepository boardRepository;
 
     @Autowired
-    private StoreRepository storeRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private S3FileService s3FileService;
 
     @PersistenceContext
     private EntityManager entityManager;
 
+    // entityManager 활용하기
     @Transactional
     public BoardCreationResponse create(BoardRequest boardRequest, List<MultipartFile> files){
 
-        User user = userRepository.getUserByfindByUsernameOnly
-                (boardRequest.username(),entityManager);
-
-        Store store = storeRepository.getStoreByIdOnly
-                (boardRequest.storeId(),entityManager);
+        User user = entityManager.getReference(User.class,boardRequest.userId());
+        Store store = entityManager.getReference(Store.class,boardRequest.storeId());
 
         Board board = Board.builder()
                 .postedTime(LocalDateTime.now())
@@ -80,11 +72,23 @@ public class BoardService {
         );
     }
 
+    // entityManager 활용하기
     @Transactional(readOnly = true)
     public List<Board> showBoardByStore(BoardListRequest boardListRequest){
 
-        return boardRepository.findBoardsWithFilesByStoreId
-                (boardListRequest.storeId());
+        List<Board> boards = entityManager.createQuery(
+                        "SELECT b FROM Board b WHERE b.store.id = :storeId", Board.class)
+                .setParameter("storeId", boardListRequest.storeId())
+                .getResultList();
+
+        if(boards.isEmpty()){
+            throw new CustomException(ErrorCode.STORE_NOT_FOUND);
+        }
+
+        return entityManager.createQuery(
+                        "SELECT b FROM Board b WHERE b.store.id = :storeId", Board.class)
+                .setParameter("storeId", boardListRequest.storeId())
+                .getResultList();
     }
 
     public void checkFirstReviewer(Store store,User user){

@@ -16,10 +16,8 @@ public interface BoardRepository extends JpaRepository<Board,Long> {
 
     List<Board> findBoardByUser(User user);
 
-    @Query("SELECT b FROM Board b " +
-            "LEFT JOIN FETCH b.s3File " +
-            "WHERE b.store.id = :storeId")
-    List<Board> findBoardsWithFilesByStoreId(@Param("storeId") Long storeId);
+
+
 
 
 }

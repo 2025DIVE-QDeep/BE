@@ -23,14 +23,5 @@ public interface FavoriteRepository extends JpaRepository<Favorite,Long> {
             @Param("storeId") Long storeId
     );
 
-    default Favorite getFavoriteByFindByUser(Long userId,
-                                             Long storeId,
-                                             EntityManager entityManager){
-        Long favoriteId = findByUserIdAndStoreId(userId,storeId)
-                .orElseThrow(()->new CustomException(ErrorCode.FAVORITE_NOT_FOUND));
-
-        return entityManager.getReference(Favorite.class,favoriteId);
-    }
-
 
 }

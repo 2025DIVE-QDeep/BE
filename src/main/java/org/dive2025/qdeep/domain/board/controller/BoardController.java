@@ -49,7 +49,7 @@ public class BoardController {
                                                     value = """
                                 {
                                   "content": "테스트용 컨텐츠",
-                                  "username": "test1",
+                                  "userId": "1",
                                   "storeId": "2"
                                 }
                                 """
