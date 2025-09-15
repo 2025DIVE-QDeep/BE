@@ -1,5 +1,7 @@
 package org.dive2025.qdeep.domain.favorite.service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.dive2025.qdeep.common.exception.CustomException;
 import org.dive2025.qdeep.common.exception.ErrorCode;
 import org.dive2025.qdeep.domain.favorite.dto.request.AddFavoriteRequest;
@@ -28,14 +30,20 @@ public class FavoriteService {
     @Autowired
     private StoreRepository storeRepository;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Transactional
     public AddFavoriteResponse addFavorite(AddFavoriteRequest addFavoriteRequest){
 
-        User user = userRepository.findById(addFavoriteRequest.userId())
-                .orElseThrow(()->new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        Store store = storeRepository.findById(addFavoriteRequest.storeId())
-                .orElseThrow(()->new CustomException(ErrorCode.STORE_NOT_FOUND));
+        User user = userRepository
+                .getUserByfindByIdOnly(addFavoriteRequest.userId(),
+                        entityManager);
+
+        Store store = storeRepository
+                .getStoreByIdOnly(addFavoriteRequest.storeId(),
+                        entityManager);
 
         Favorite favorite = Favorite.builder()
                 .user(user)
@@ -55,19 +63,24 @@ public class FavoriteService {
     @Transactional
     public DeleteFavoriteResponse deleteFavorite(DeleteFavoriteRequest deleteFavoriteRequest){
 
-        // User를 영속성 컨텍스트에 등록
-        User user = userRepository.findById(deleteFavoriteRequest.userId())
-                .orElseThrow(()->new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        // Store를 영속성 컨텍스트에 등록
-        Store store = storeRepository.findById(deleteFavoriteRequest.storeId())
-                        .orElseThrow(()->new CustomException(ErrorCode.STORE_NOT_FOUND));
+        Favorite favorite = favoriteRepository
+                .getFavoriteByFindByUser(deleteFavoriteRequest.userId(),
+                        deleteFavoriteRequest.storeId(),
+                        entityManager);
 
-        Favorite favorite = favoriteRepository.findByUserAndStore(user,store);
+        User user = userRepository
+                .getUserByfindByIdOnly(deleteFavoriteRequest.userId(),entityManager);
 
-        // oneToMany를 가지는 객체에서 컬렉션의 요소 제거해주기
+        Store store = storeRepository
+                .getStoreByIdOnly(deleteFavoriteRequest.storeId(),
+                        entityManager);
+
+
+        // oneToMany를 가지는 객체에서 컬렉션의 요소 제거해주기 -> 영속성 관리
         user.deleteFavorite(favorite);
         store.deleteFavorite(favorite);
+
         // 리포지토리에서 객체 삭제하기
         favoriteRepository.delete(favorite);
 
