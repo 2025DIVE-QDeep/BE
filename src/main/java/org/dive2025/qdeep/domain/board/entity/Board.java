@@ -1,6 +1,7 @@
 package org.dive2025.qdeep.domain.board.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.dive2025.qdeep.domain.file.entity.S3File;
@@ -41,6 +42,7 @@ public class Board {
     private User user;
 
     @OneToMany(mappedBy = "board",cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonManagedReference
     private List<S3File> s3File = new ArrayList<>();
 
     public void addS3File(S3File file){
