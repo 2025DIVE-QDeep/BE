@@ -41,11 +41,11 @@ public class GptController {
                                     @ExampleObject(
                                             name = "추천 요청 예시",
                                             value = """
-                        {
-                          " address " : " 부산특별시 해운대구 ",
-                          " hours" : " 오후 1시 ~ 오후 3시 " ,
-                          " category " : " 고기집 "
-                        }
+                                                    {
+                                                        "gender" : "남자",
+                                                        "age" : "10대",
+                                                        "address" : "대전광역시 중구"
+                                                    }
                         """
                                     )
                             }
@@ -60,22 +60,28 @@ public class GptController {
                                     value = """
                                             [
                                                         {
-                                                            "name": "해운대 소금구이",
-                                                            "address": "부산 해운대구 센텀동 170-9",
-                                                            "hours": "오후 1시 - 오후 3시",
-                                                            "description": "신선한 고기와 다양한 사이드 메뉴를 즐길 수 있는 소금구이 전문점"
+                                                            "name": "치즈케이크",
+                                                            "address": "대전 중구 대사문로 58",
+                                                            "hours": "10:00 - 20:00",
+                                                            "description": "분위기 좋은 카페에서 다채로운 치즈케이크를 즐길 수 있는 곳",
+                                                            "latitude": 36.320225,
+                                                            "longtitude": 127.422372
                                                         },
                                                         {
-                                                            "name": "해운대 할매고기",
-                                                            "address": "부산 해운대구 우동 651-1",
-                                                            "hours": "오후 1시 - 오후 3시",
-                                                            "description": "현지인들에게 사랑받는 고기 요리 전문점으로 할머니가 직접 요리하는 맛을 경험해보세요"
+                                                            "name": "부엉이가조타",
+                                                            "address": "대전 중구 중앙로 136",
+                                                            "hours": "11:30 - 22:00",
+                                                            "description": "아기자기한 인테리어와 맛있는 음식이 인기있는 식당",
+                                                            "latitude": 36.327659,
+                                                            "longtitude": 127.424304
                                                         },
                                                         {
-                                                            "name": "해운대 불고기집",
-                                                            "address": "부산 해운대구 중동 1417-10",
-                                                            "hours": "오후 1시 - 오후 3시",
-                                                            "description": "고기의 담백한 맛을 즐길 수 있는 불고기 전문 음식점"
+                                                            "name": "카페로뮤",
+                                                            "address": "대전 중구 대종로 453",
+                                                            "hours": "09:00 - 21:00",
+                                                            "description": "편안한 분위기와 직접 로스팅한 커피를 즐길 수 있는 카페",
+                                                            "latitude": 36.332241,
+                                                            "longtitude": 127.422127
                                                         }
                                                     ]
                                     """

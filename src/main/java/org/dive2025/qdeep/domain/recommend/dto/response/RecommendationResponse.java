@@ -5,5 +5,5 @@ public record RecommendationResponse(String name,
                                      String hours,
                                      String description,
                                      double latitude,
-                                     double longitude) {
+                                     double longtitude) {
 }
