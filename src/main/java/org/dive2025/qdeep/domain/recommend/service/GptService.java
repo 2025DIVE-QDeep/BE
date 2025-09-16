@@ -1,7 +1,6 @@
 package org.dive2025.qdeep.domain.recommend.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -33,15 +32,13 @@ public class GptService {
     @Value("${openai.model}")
     private String model;
 
-    //
+
     public List<RecommendationResponse> processRequest(GptClientRequest gptClientRequest){
 
 
         GptResponse gptResponse =  gptClient
                 .sendMessage(new GptRequest(model,
                         gptClientRequest.prompt()));
-
-        System.out.println(gptResponse);
 
         String jsonText = gptResponse.output()
                 .stream()
@@ -54,8 +51,6 @@ public class GptService {
                 .text();
 
         System.out.println(jsonText);
-
-        // TypeReference 정리 필요
 
         // 최상위 객체의 모든 필드를 탐색
         List<RecommendationResponse> responses = new ArrayList<>();
@@ -88,24 +83,25 @@ public class GptService {
     public GptClientRequest prompting(PromptInputRequest promptInputRequest) {
 
         String promptTemplate = """
-%s 근처에서 %s 카테고리의 장소를 추천해줘.
-방문 시간은 %s에 맞춰.
+%s 성별을 가진 %s 나이대가 방문해볼만한 음식점,카페 카테고리의 장소를 추천해줘.
+주소는 %s 근처로 맞춰.
 결과는 JSON 형식으로 만들어줘. 
 필드 이름은 다음과 같아:
 - name
 - address
 - hours
 - description
-- laitude
+- latitude
 - longtitude
-다른 정보는 넣지 말고, JSON 구조만 반환해. 그리고 장소는 3개를 추천해
+다른 정보는 넣지 말고, 반드시 JSON 구조만 반환해. 그리고 장소는 3개를 추천해.
+JSON 앞뒤에 어떤 설명도 붙이지마. JSON 외의 텍스트는 절대 포함하지마.
 """;
 
         return new GptClientRequest(String
                 .format(promptTemplate,
-                        promptInputRequest.address(),
-                        promptInputRequest.category(),
-                        promptInputRequest.hours()));
+                        promptInputRequest.gender(),
+                        promptInputRequest.age(),
+                        promptInputRequest.address()));
 
     }
 
