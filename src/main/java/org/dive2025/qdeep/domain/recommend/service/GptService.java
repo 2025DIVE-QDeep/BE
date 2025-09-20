@@ -14,10 +14,12 @@ import org.dive2025.qdeep.domain.recommend.dto.request.PromptInputRequest;
 import org.dive2025.qdeep.domain.recommend.dto.response.RecommendationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -50,10 +52,9 @@ public class GptService {
                 .orElseThrow(() -> new CustomException(ErrorCode.GPT_RESPONSE_NOT_FOUND))
                 .text();
 
-        System.out.println(jsonText);
-
         // 최상위 객체의 모든 필드를 탐색
         List<RecommendationResponse> responses = new ArrayList<>();
+
         try {
             JsonNode rootNode = objectMapper.readTree(jsonText);
 
@@ -92,9 +93,8 @@ public class GptService {
 - hours
 - description
 - latitude
-- longtitude
-다른 정보는 넣지 말고, 반드시 JSON 구조만 반환해. 그리고 장소는 3개를 추천해.
-JSON 앞뒤에 어떤 설명도 붙이지마. JSON 외의 텍스트는 절대 포함하지마.
+- longitude
+다른 정보는 넣지 말고, 반드시 JSON 구조만 반환하되 최상위는 객체로 반환해. 그리고 장소는 3개를 추천해.
 """;
 
         return new GptClientRequest(String
@@ -102,6 +102,18 @@ JSON 앞뒤에 어떤 설명도 붙이지마. JSON 외의 텍스트는 절대 �
                         promptInputRequest.gender(),
                         promptInputRequest.age(),
                         promptInputRequest.address()));
+
+    }
+
+    // 기존의 요청 메소드를 CompletableFuture타입으로 래핑
+    @Async("gptTaskExecutor")
+    public CompletableFuture<List<RecommendationResponse>> recommendation
+            (GptClientRequest gptClientRequest){
+
+        log.info("Thread Name : {}",Thread.currentThread().getName());
+
+        return CompletableFuture
+                .completedFuture(processRequest(gptClientRequest));
 
     }
 
