@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.dive2025.qdeep.domain.recommend.dto.request.PromptInputRequest;
 import org.dive2025.qdeep.domain.recommend.service.GptService;
 import org.dive2025.qdeep.domain.store.dto.response.SavedStoreResponse;
@@ -13,10 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 
+@Slf4j
 @RestController
 @RequestMapping("/gpt")
 @Tag(name="추천 API",
@@ -90,22 +93,22 @@ public class GptController {
     @PostMapping("/chat")
     public CompletableFuture<ResponseEntity<List<SavedStoreResponse>>> chat(@RequestBody PromptInputRequest promptInputRequest){
 
-        /*
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(storeService.saveAllResponsesBatch(
-                        gptService
-                                .processRequest(gptService
-                                .prompting(promptInputRequest))));
 
-         */
         return gptService
                 .recommendation(gptService
                         .prompting(promptInputRequest)) // 비동기로 "gptTaskExecutor" 스레드 에서 실행
                 .thenApply(responses // 나머지 로직도 같은 스레드에서 실행
                         -> storeService
                         .saveAllResponsesBatch(responses))
-                .thenApply(ResponseEntity::ok);
+                .thenApply(ResponseEntity::ok)
+                .whenComplete((res, ex) -> {  // 여기서 완료 시점 기록 가능
+                    if (ex != null) {
+                        log.error("GPT 추천 처리 중 오류 발생", ex);
+                    } else {
+                        log.info(Thread.currentThread().getName()+" 스레드 종료 : {}",LocalDateTime.now());
+
+                    }
+                });
     }
 
 }
