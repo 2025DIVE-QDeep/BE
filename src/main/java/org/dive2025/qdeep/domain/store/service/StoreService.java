@@ -38,7 +38,7 @@ public class StoreService {
                             .hours(response.hours())
                             .description(response.description())
                             .latitude(response.latitude())
-                            .longtitude(response.longtitude())
+                            .longtitude(response.longitude())
                             .build();
                     checkDuplicationSaving(store); // 이미 등록된건지 체크하는 메소드
 
