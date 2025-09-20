@@ -5,18 +5,16 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.dive2025.qdeep.domain.recommend.dto.request.GptClientRequest;
 import org.dive2025.qdeep.domain.recommend.dto.request.PromptInputRequest;
-import org.dive2025.qdeep.domain.recommend.dto.response.RecommendationSaveResponse;
 import org.dive2025.qdeep.domain.recommend.service.GptService;
 import org.dive2025.qdeep.domain.store.dto.response.SavedStoreResponse;
 import org.dive2025.qdeep.domain.store.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 
 @RestController
@@ -90,8 +88,9 @@ public class GptController {
 
             ))
     @PostMapping("/chat")
-    public ResponseEntity<List<SavedStoreResponse>> chat(@RequestBody PromptInputRequest promptInputRequest){
+    public CompletableFuture<ResponseEntity<List<SavedStoreResponse>>> chat(@RequestBody PromptInputRequest promptInputRequest){
 
+        /*
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(storeService.saveAllResponsesBatch(
@@ -99,6 +98,14 @@ public class GptController {
                                 .processRequest(gptService
                                 .prompting(promptInputRequest))));
 
+         */
+        return gptService
+                .recommendation(gptService
+                        .prompting(promptInputRequest)) // 비동기로 "gptTaskExecutor" 스레드 에서 실행
+                .thenApply(responses // 나머지 로직도 같은 스레드에서 실행
+                        -> storeService
+                        .saveAllResponsesBatch(responses))
+                .thenApply(ResponseEntity::ok);
     }
 
 }
