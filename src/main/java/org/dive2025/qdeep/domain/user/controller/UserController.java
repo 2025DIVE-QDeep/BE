@@ -60,7 +60,19 @@ public class UserController {
                     responseCode = "201",
                     description = "회원가입 성공",
                     content = @Content(
-                            mediaType = "application/json"
+                            mediaType = "application/json",
+                            examples = {
+                                    @ExampleObject(
+                                            name = "회원가입 결과 예시",
+                                            value = """
+                                                    {
+                                                    "username":"test1",
+                                                    "nickname":"tester",
+                                                    "creationTime":"2025-09-02T15:42:05.347228"
+                                                    }
+                                                    """
+                                    )
+                            }
                     )
             )
     })
