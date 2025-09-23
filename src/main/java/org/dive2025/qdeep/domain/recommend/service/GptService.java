@@ -94,7 +94,7 @@ public class GptService {
 - description
 - latitude
 - longitude
-다른 정보는 넣지 말고, 반드시 JSON 구조만 반환하되 최상위는 객체로 반환해. 그리고 장소는 3개를 추천해.
+다른 정보는 넣지 말고, 반드시 JSON 구조만 반환하되 최상위는 객체로 반환해. 그리고 장소는 10개를 추천해.
 """;
 
         return new GptClientRequest(String
