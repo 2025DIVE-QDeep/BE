@@ -21,7 +21,8 @@ public enum ErrorCode {
     GPT_RESPONSE_NOT_FOUND(HttpStatus.NOT_FOUND,"gpt API의 결과값을 찾을 수 없습니다."),
     UNSUITABLE_FILE_MATCHED(HttpStatus.BAD_REQUEST,"잘못된 파일 형식입니다."),
     FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR,"파일 업로드에 실패했습니다."),
-    FILES_NOT_FOUND(HttpStatus.NOT_FOUND,"파일을 찾을 수 없습니다.");
+    FILES_NOT_FOUND(HttpStatus.NOT_FOUND,"파일을 찾을 수 없습니다."),
+    FAVORITE_ERROR(HttpStatus.NOT_FOUND,"찜한 가게가 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
