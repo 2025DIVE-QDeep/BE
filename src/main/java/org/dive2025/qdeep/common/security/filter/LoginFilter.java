@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.dive2025.qdeep.common.exception.ErrorCode;
 import org.dive2025.qdeep.common.security.dto.request.LoginRequest;
 import org.dive2025.qdeep.common.security.dto.response.LoginFailedResponse;
+import org.dive2025.qdeep.common.security.dto.response.LoginSuccessResponse;
 import org.dive2025.qdeep.common.security.service.ReissueService;
 import org.dive2025.qdeep.common.security.util.JwtUtil;
 import org.springframework.http.HttpStatus;
@@ -99,6 +100,17 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.addCookie(reissueService.createCookie("refresh",refresh));
         response.setStatus(HttpStatus.OK.value());
         log.info("[ 로그인 성공 ] TIME : {} , USER : {}", LocalDateTime.now(),username);
+
+
+        String json = objectMapper
+                .writeValueAsString(new LoginSuccessResponse(access,refresh,
+                jwtUtil.getUsername(access)));
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(json);
+        response.getWriter().flush();
+        response.flushBuffer();
 
 
     }
