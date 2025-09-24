@@ -23,5 +23,9 @@ public interface FavoriteRepository extends JpaRepository<Favorite,Long> {
             @Param("storeId") Long storeId
     );
 
+    @Query("SELECT s FROM Favorite f JOIN f.store s WHERE f.user.id = :userId")
+    List<Store> findFavoriteStoresByUserId(Long userId);
+
+
 
 }

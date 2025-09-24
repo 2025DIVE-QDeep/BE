@@ -8,6 +8,7 @@ import org.dive2025.qdeep.domain.favorite.dto.request.AddFavoriteRequest;
 import org.dive2025.qdeep.domain.favorite.dto.request.DeleteFavoriteRequest;
 import org.dive2025.qdeep.domain.favorite.dto.response.AddFavoriteResponse;
 import org.dive2025.qdeep.domain.favorite.dto.response.DeleteFavoriteResponse;
+import org.dive2025.qdeep.domain.favorite.dto.response.ShowFavoriteResponse;
 import org.dive2025.qdeep.domain.favorite.entity.Favorite;
 import org.dive2025.qdeep.domain.favorite.repository.FavoriteRepository;
 import org.dive2025.qdeep.domain.store.entity.Store;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class FavoriteService {
@@ -76,6 +78,16 @@ public class FavoriteService {
         favoriteRepository.delete(favorite);
 
         return new DeleteFavoriteResponse(user.getUsername(),store.getName());
+    }
+
+    @Transactional(readOnly = true)
+    public ShowFavoriteResponse showFavorite(Long userId){
+        List<Store> stores = favoriteRepository.findFavoriteStoresByUserId(userId);
+        if(stores.isEmpty()){
+            throw new CustomException(ErrorCode.FAVORITE_ERROR);
+        }
+
+        return new ShowFavoriteResponse(stores);
     }
 
 }
